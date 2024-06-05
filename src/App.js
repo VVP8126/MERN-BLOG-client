@@ -1,24 +1,27 @@
-import logo from './logo.svg';
-import './App.css';
+import Container from '@mui/material/Container';
+import Header from './components/Header';
+import Home from './page/Home/Home';
+import PostPage from './page/PostPage';
+import Login from './page/Login';
+import Registration from './page/Registration';
+import NewPost from './page/NewPost';
+
+import { Routes, Route } from 'react-router-dom';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Header />
+      <Container maxWidth="lg">
+        <Routes>
+          <Route path="/" element={<Home />} index />
+          <Route path="/posts/:id" element={<PostPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Registration />} />
+          <Route path="/newpost" element={<NewPost />} />
+        </Routes>
+      </Container>
+    </>
   );
 }
 
