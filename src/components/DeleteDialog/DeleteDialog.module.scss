@@ -1,0 +1,13 @@
+.bar {
+  padding: 40px 0;
+
+  .alertMessage {
+    flex: 1;
+    margin-left: 10px;
+
+    .paragraph {
+      margin: 0;
+      padding: 0;
+    }
+  }
+}

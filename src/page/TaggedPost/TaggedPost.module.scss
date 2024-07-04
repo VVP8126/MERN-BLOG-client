@@ -1,0 +1,30 @@
+.container {
+  max-width: 600px;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-radius: 10px;
+  background-color: #dedede;
+
+  .searchTagsResultHeader {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 10px;
+
+    .chip {
+      background-color: #202020;
+      color: white;
+    }
+  }
+  .card {
+    max-width: 550px;
+    margin-top: 10px;
+
+    .author {
+      display: flex;
+      justify-content: space-between;
+    }
+  }
+  .notFound {
+    padding: 80px 0;
+  }
+}

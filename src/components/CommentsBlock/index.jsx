@@ -10,8 +10,9 @@ import {
 } from '@mui/material';
 import SideBlock from '../SideBlock';
 import styles from './CommentsBlock.module.scss';
+import { formatDate } from '../../utils/formatter';
 
-const CommentsBlock = ({ items, children, isLoading = true }) => {
+const CommentsBlock = ({ items, children, isLoading, isFullPage }) => {
   return (
     <SideBlock title={'COMMENTS'}>
       <List>
@@ -27,13 +28,17 @@ const CommentsBlock = ({ items, children, isLoading = true }) => {
               </ListItemAvatar>
               {isLoading ? (
                 <div className={styles.skeleton}>
-                  <Skeleton variant="text" height={25} width={120} />
-                  <Skeleton variant="text" height={18} width={220} />
+                  <Skeleton variant="text" height={25} width={100} />
+                  <Skeleton variant="text" height={18} width={100} />
                 </div>
               ) : (
-                <ListItemText primary={obj.user.fullName} secondary={obj.text} />
+                <ListItemText
+                  primary={obj?.user?.fullName}
+                  secondary={!isFullPage ? obj?.post?.title : obj?.commentText}
+                />
               )}
             </ListItem>
+            <p className={styles.dateLbl}>{formatDate(obj?.updatedAt)}</p>
             <Divider variant="inset" component="li" />
           </React.Fragment>
         ))}

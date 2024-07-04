@@ -1,62 +1,89 @@
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Grid from '@mui/material/Grid';
 
 import { Post } from '../../components/Post';
+import Pagination from '../../components/PaginationBar';
 import TagsBlock from '../../components/TagsBlock';
 import CommentsBlock from '../../components/CommentsBlock';
 import styles from './Home.module.scss';
+import { fetchPosts, fetchTags, fetchAuthorPosts } from '../../redux/slices/posts';
+import { fetchLastComments } from '../../redux/slices/comments';
 
 const Home = () => {
+  const dispatch = useDispatch();
+  const userData = useSelector((state) => state.auth.data);
+  const lastComments = useSelector((state) => state.comments.comments);
+  const { posts, tags } = useSelector((state) => state.posts);
+  const isLoading = posts.status === 'loading';
+  const isTagBlockLoading = tags.status === 'loading';
+  const isCommentsBlockLoading = lastComments.status === 'loading';
+
+  const [currentTab, setCurrentTab] = React.useState(0);
+  const isFirstLoaded = React.useRef(false);
+
+  const changeCurrentTab = (newValue) => {
+    setCurrentTab(newValue);
+    if (newValue === 1) {
+      dispatch(fetchAuthorPosts(userData._id));
+    } else {
+      dispatch(fetchPosts());
+    }
+  };
+
+  React.useEffect(() => {
+    if (!isFirstLoaded.current) {
+      dispatch(fetchPosts());
+      dispatch(fetchTags());
+      dispatch(fetchLastComments());
+      isFirstLoaded.current = true;
+      // console.log('First view');
+    }
+  }, []);
+
   return (
     <>
-      <Tabs className={styles.tabs} value={1} aria-label="DDDDD">
-        <Tab label="NEW">NEW</Tab>
-        <Tab label="POPULAR">POPULAR</Tab>
+      <Tabs className={styles.tabs} value={currentTab} aria-label="DDDDD">
+        <Tab label="ALL" onClick={() => changeCurrentTab(0)} />
+        <Tab label="MY" onClick={() => changeCurrentTab(1)} disabled={!userData} />
       </Tabs>
       <Grid container spacing={4}>
         <Grid xs={8} item>
-          {[...Array(5)].map((index) => (
-            <Post
-              d={1}
-              title="Some TITLE"
-              imageUrl="https://res.cloudinary.com/practicaldev/image/fetch/s--UnAfrEG8--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/icohm5g0axh9wjmu4oc3.png"
-              user={{
-                avatarUrl:
-                  'https://res.cloudinary.com/practicaldev/image/fetch/s--uigxYVRB--/c_fill,f_auto,fl_progressive,h_50,q_auto,w_50/https://dev-to-uploads.s3.amazonaws.com/uploads/user/profile_image/187971/a5359a24-b652-46be-8898-2c5df32aa6e0.png',
-                fullName: 'Full Name',
-              }}
-              createdAt={'4/06/2024'}
-              viewsCount={150}
-              commentsCount={3}
-              tags={['TAG-1', 'TAG-4', 'TAG-7']}
-              isEditable
-            />
-          ))}
+          {(isLoading ? [...Array(5)] : posts.items).map((item, index) =>
+            isLoading ? (
+              <Post key={index} isLoading={true} />
+            ) : (
+              <Post
+                key={index}
+                _id={item._id}
+                title={item.title}
+                imageUrl={
+                  item.imageUrl
+                    ? `http://localhost:7777${item.imageUrl}`
+                    : 'https://catherineasquithgallery.com/uploads/posts/2021-02/1613545488_176-p-kartinki-na-belom-fone-dlya-prezentatsii-198.jpg'
+                }
+                user={item.user}
+                createdAt={item.createdAt}
+                viewsCount={item.viewsCount}
+                commentsCount={3}
+                tags={item.tags}
+                isEditable={userData?._id === item.user._id}
+              />
+            ),
+          )}
         </Grid>
         <Grid xs={4} item>
-          <TagsBlock items={['TAG-1', 'TAG-4', 'TAG-7']} isLoading={false} />
+          <TagsBlock items={tags.items} isLoading={isTagBlockLoading} />
           <CommentsBlock
-            items={[
-              {
-                user: {
-                  fullName: 'User User1',
-                  avatarUrl: 'https://mui.com/static/images/avatar/1.jpg',
-                },
-                text: 'First comment',
-              },
-              {
-                user: {
-                  fullName: 'User User2',
-                  avatarUrl: 'https://mui.com/static/images/avatar/2.jpg',
-                },
-                text: 'When displaying three lines or more, the avatar is not aligned at the top. You should set the prop to align the avatar at the top',
-              },
-            ]}
+            isLoading={isCommentsBlockLoading}
+            items={lastComments.items}
+            isFullPage={false}
           />
         </Grid>
       </Grid>
+      {!currentTab && <Pagination />}
     </>
   );
 };

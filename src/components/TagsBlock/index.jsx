@@ -11,8 +11,8 @@ const TagsBlock = ({ items, isLoading = true }) => {
     <SideBlock title={'TAGS'}>
       <List>
         {(isLoading ? [...Array(5)] : items).map((name, index) => (
-          <Link href={`/tags/${name}`} className={styles.tagName}>
-            <ListItem key={index} disablePadding>
+          <Link to={`/tags/${name?.trim()}`} key={index} className={styles.tagName}>
+            <ListItem disablePadding>
               <ListItemButton>
                 <ListItemIcon>
                   <TagIcon />

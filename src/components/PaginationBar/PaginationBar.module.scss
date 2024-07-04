@@ -1,0 +1,19 @@
+.pageBar {
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  .flexedBetween {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin: 20px 0;
+    .page {
+      display: flex;
+      justify-content: space-between;
+      width: 80px;
+    }
+  }
+}

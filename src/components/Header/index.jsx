@@ -3,11 +3,16 @@ import { Button } from '@mui/material';
 import { Container } from '@mui/material';
 import styles from './Header.module.scss';
 import { Link } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { userIsAuthorized, logout } from '../../redux/slices/auth';
 
 const Header = () => {
-  const isAuthorized = false;
+  const isAuthorized = useSelector(userIsAuthorized);
+  const dispatch = useDispatch();
+
   const onLogout = () => {
-    alert('LOGOUT');
+    dispatch(logout());
+    window.localStorage.removeItem('token');
   };
 
   return (
@@ -20,7 +25,7 @@ const Header = () => {
           <div className={styles.buttons}>
             {isAuthorized ? (
               <>
-                <Link to={'/posts/create'}>
+                <Link to={'/newpost'}>
                   <Button variant="contained">NEW POST</Button>{' '}
                 </Link>
                 <Button variant="contained" onClick={onLogout} color="error">
