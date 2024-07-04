@@ -22,12 +22,12 @@ const Registration = () => {
     },
     mode: 'onChange',
   });
-
+  //
   const onSubmit = async (values) => {
     const data = await dispatch(fetchRegister(values));
-    console.log(data);
+    // console.log(data);
     if (!data.payload) {
-      return alert('Failed to register !');
+      return alert("Failed to register. Credentials didn't pass Validation !");
     }
     if ('token' in data.payload) {
       window.localStorage.setItem('token', data.payload.token);
