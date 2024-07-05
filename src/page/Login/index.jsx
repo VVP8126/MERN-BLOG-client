@@ -13,6 +13,7 @@ import { Navigate } from 'react-router-dom';
 const Login = () => {
   const isAuthorized = useSelector(userIsAuthorized);
   const dispatch = useDispatch();
+  const loginError = useSelector((state) => state.auth.error);
 
   // Clear up - server errors handling
   const {
@@ -37,13 +38,17 @@ const Login = () => {
      * }
      */
     const data = await dispatch(fetchUserData(values));
-
-    if (!data.payload) {
-      setError(data.message);
-      return alert('Failed to authorize !');
-    }
-    if ('token' in data.payload) {
+    if (data.payload?.token) {
       window.localStorage.setItem('token', data.payload.token);
+    } else {
+      let message;
+      if (data.payload?.message) {
+        message = data.payload?.message;
+      } else {
+        message = data.payload.map((item) => item.msg).join(',');
+      }
+      console.log('Failed to LOGIN:', message);
+      alert(`Failed to LOGIN: ${message}`);
     }
   };
 

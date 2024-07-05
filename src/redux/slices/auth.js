@@ -4,12 +4,25 @@ import serverAPI from '../../http/serverAPI';
 const initState = {
   data: null,
   status: 'loading',
+  error: '',
 };
 
-export const fetchUserData = createAsyncThunk('auth/fetchUserData', async (params) => {
-  const { data } = await serverAPI.post('/login', params);
-  return data;
-});
+export const fetchUserData = createAsyncThunk(
+  'auth/fetchUserData',
+  async (params, { rejectWithValue }) => {
+    try {
+      const response = await serverAPI.post('/login', params);
+      // console.log('Response', response);
+      if (!response.status === 200) {
+        throw new Error('Error !');
+      }
+      return response.data;
+    } catch (error) {
+      // console.log('Catched ERROR:', error);
+      return rejectWithValue(error.response.data);
+    }
+  },
+);
 
 export const fetchRegister = createAsyncThunk('auth/fetchRegister', async (params) => {
   const { data } = await serverAPI.post('/register', params);
@@ -32,32 +45,37 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(fetchUserData.pending, (state) => {
       state.data = null;
+      state.error = null;
       state.status = 'loading';
     });
     builder.addCase(fetchUserData.fulfilled, (state, action) => {
       state.data = action.payload;
       state.status = 'loaded';
     });
-    builder.addCase(fetchUserData.rejected, (state) => {
+    builder.addCase(fetchUserData.rejected, (state, action) => {
       state.data = null;
+      state.error = action.payload;
       state.status = 'error';
     });
 
     builder.addCase(fetchRegister.pending, (state) => {
       state.data = null;
+      state.error = null;
       state.status = 'loading';
     });
     builder.addCase(fetchRegister.fulfilled, (state, action) => {
       state.data = action.payload;
       state.status = 'loaded';
     });
-    builder.addCase(fetchRegister.rejected, (state) => {
+    builder.addCase(fetchRegister.rejected, (state, action) => {
       state.data = null;
+      state.error = action.payload;
       state.status = 'error';
     });
 
     builder.addCase(fetchPersonalData.pending, (state) => {
       state.data = null;
+      state.error = null;
       state.status = 'loading';
     });
     builder.addCase(fetchPersonalData.fulfilled, (state, action) => {
